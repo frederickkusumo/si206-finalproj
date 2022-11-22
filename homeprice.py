@@ -2,6 +2,7 @@ from xml.sax import parseString
 from bs4 import BeautifulSoup
 import os
 import json
+import extracode
 
 def get_price_info(html_file):
     source_dir = os.path.dirname(__file__) 
@@ -30,10 +31,6 @@ def get_detailed_info(cities):
         data[i] = city
     return data
 
-def write_json(filename, data):
-    with open(filename, 'w') as f:
-        f.write(json.dumps(data, indent = 4))
-
 def add_to_sql():
     pass
 
@@ -42,4 +39,4 @@ if __name__ == '__main__':
         'Boston', 'Cincinnati', 'Miami', 'SanDiego', 'Tucson', 'SaltLakeCity', 'Honolulu', 'Portland', 'Detroit', 
         'Sacramento', 'SanJose', 'NewOrleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
     data = get_detailed_info(cities)
-    write_json('Frederick/cities_dataset.json', data)
+    extracode.write_json('cities_dataset.json', data)

@@ -3,26 +3,13 @@ import json
 import unittest
 import os
 import sqlite3
-
-def read_json(cache_filename):
-    try:
-        with open(cache_filename,'r',encoding='utf-8') as file:
-            return json.loads(file.read())
-    except:
-        data = {}
-        return data
+import extracode
 
 def get_request_url(list):
     url = f'https://api.waqi.info/feed/{list}/?token=3a04f5d06b3d0ec8317f0e97d4a6054a4a3d01fb'
     # r = requests.get(url).text
     # data = json.loads(r)
     return url
-
-def write_json(cache_filename, dict):
-    f = open(cache_filename,'w')
-    data = json.dumps(dict, indent=4)
-    f.write(data)
-    f.close()
 
 def get_data_using_cache(list, cache_filename):
     '''
@@ -54,7 +41,7 @@ def get_data_using_cache(list, cache_filename):
     None:
         if search is unsuccessful
     '''
-    dict = read_json(cache_filename)
+    dict = extracode.read_json(cache_filename)
     url = get_request_url(list)
     if url in dict:
         print(f"Using cache for {list}")
@@ -68,7 +55,7 @@ def get_data_using_cache(list, cache_filename):
             # print(y)
             if y["status"] == "ok":
                 dict[url] = y["data"]
-                write_json(cache_filename,dict)
+                extracode.write_json(cache_filename,dict)
                 return dict.get(url)
             else:
                 print("No list found for list name provided")
@@ -76,12 +63,6 @@ def get_data_using_cache(list, cache_filename):
         except:
             print("Exception")
             return None
-
-def setUpDatabase(db_name):
-    path = os.path.dirname(os.path.abspath(__file__))
-    conn = sqlite3.connect(path+'/'+db_name)
-    cur = conn.cursor()
-    return cur, conn
 
 def create_cities_table(cur, conn):
 
@@ -125,7 +106,7 @@ def main():
     # city_list=['newyork','los angeles','seattle','Chicago','Houston']
     city_list=['New York', 'Los Angeles', 'Seattle', 'Chicago', 'Houston', 'Dallas', 'Austin', 'San Francisco', 'Denver', 'Boston', 'Cincinnati', 'Miami', 'San Diego', 'Tucson', 'Salt Lake City', 'Honolulu', 'Portland', 'Detroit', 'Sacramento', 'San Jose', 'New Orleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
     [get_data_using_cache(list, cache_filename) for list in city_list]
-    cur, conn = setUpDatabase('city_id.db')
+    cur, conn = extracode.setUpDatabase('city_id.db')
     create_cities_table(cur, conn)
     add_AirQ_from_json(city_list,'cache_file.json', cur, conn)
 
