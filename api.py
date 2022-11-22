@@ -3,7 +3,7 @@ import json
 import unittest
 import os
 import sqlite3
-import extracode
+import main
 
 def get_request_url(list):
     url = f'https://api.waqi.info/feed/{list}/?token=3a04f5d06b3d0ec8317f0e97d4a6054a4a3d01fb'
@@ -41,7 +41,7 @@ def get_data_using_cache(list, cache_filename):
     None:
         if search is unsuccessful
     '''
-    dict = extracode.read_json(cache_filename)
+    dict = main.read_json(cache_filename)
     url = get_request_url(list)
     if url in dict:
         print(f"Using cache for {list}")
@@ -55,7 +55,7 @@ def get_data_using_cache(list, cache_filename):
             # print(y)
             if y["status"] == "ok":
                 dict[url] = y["data"]
-                extracode.write_json(cache_filename,dict)
+                main.write_json(cache_filename,dict)
                 return dict.get(url)
             else:
                 print("No list found for list name provided")
@@ -84,6 +84,23 @@ def add_AirQ_from_json(list,filename, cur, conn):
     for i in list:
         url = get_request_url(i)
         raw_name=json_data[url]["city"]["name"]
+        if i in raw_name:
+            raw_name = i
+        else:
+            if raw_name == "Chi_sp, Illinois, USA":
+                raw_name = "Chicago"
+            elif raw_name == "CAMP, Colorado, USA":
+                raw_name = "Denver"
+            elif raw_name == "CAMP, Colorado, USA":
+                raw_name = "Denver"
+            elif raw_name == "Taft, Ohio, USA":
+                raw_name = "Cincinnati"
+            elif raw_name == "Geronimo, Pima County, USA":
+                raw_name = "Tucson"
+            elif raw_name == "United Ave., Georgia, USA":
+                raw_name = "Tucson"
+            elif raw_name == "Lake Isle Estates - Winter Park, Orange, Florida, USA":
+                raw_name = "Orlando"
         dic[raw_name]={}
         for i in json_data[url]["forecast"]["daily"]["pm25"]:
             raw_pm25 = i['avg']
@@ -100,15 +117,3 @@ def add_AirQ_from_json(list,filename, cur, conn):
             id+=1
     conn.commit()
 
-def main():
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    cache_filename = dir_path + '/' + "cache_file.json"
-    # city_list=['newyork','los angeles','seattle','Chicago','Houston']
-    city_list=['New York', 'Los Angeles', 'Seattle', 'Chicago', 'Houston', 'Dallas', 'Austin', 'San Francisco', 'Denver', 'Boston', 'Cincinnati', 'Miami', 'San Diego', 'Tucson', 'Salt Lake City', 'Honolulu', 'Portland', 'Detroit', 'Sacramento', 'San Jose', 'New Orleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
-    [get_data_using_cache(list, cache_filename) for list in city_list]
-    cur, conn = extracode.setUpDatabase('city_id.db')
-    create_cities_table(cur, conn)
-    add_AirQ_from_json(city_list,'cache_file.json', cur, conn)
-
-
-main()

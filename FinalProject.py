@@ -2,7 +2,7 @@ import json
 import unittest
 import os
 import requests
-import extracode
+import main
 
 
 API_KEY = "b9d13880c708393576c4e77042fc6643e4fb0be8"
@@ -17,7 +17,7 @@ def get_request_url(city_num, state_num):
 def get_data_using_cache(city, city_id, state_id, cache_filename):
 
     url = get_request_url(city_id, state_id)
-    d = extracode.read_json(cache_filename)
+    d = main.read_json(cache_filename)
     if url in d:
         print(f'Using cache for {city}')
         return d[url]
@@ -29,7 +29,7 @@ def get_data_using_cache(city, city_id, state_id, cache_filename):
             print(r)
             if info['status'] == 'OK':
                 d[url] = info['results']
-                extracode.write_json(cache_filename,d)
+                main.write_json(cache_filename,d)
                 return d.get(url)
             else:
                 print("No list found for list name provided")
