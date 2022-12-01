@@ -29,5 +29,9 @@ if __name__ == '__main__':
     cur, conn = setUpDatabase('city_id.db')
     api.create_cities_table(cur, conn)
     api.add_AirQ_from_json(city_list,'cache_file.json', cur, conn)
-    homeprice.add_prices_from_json(cur, conn, 'prices_dataset.json')
-    
+    cities = ['NewYork', 'LosAngeles', 'Seattle', 'Chicago', 'Houston', 'Dallas', 'Austin', 'SanFrancisco', 'Denver', 
+        'Boston', 'Cincinnati', 'Miami', 'SanDiego', 'Tucson', 'SaltLakeCity', 'Honolulu', 'Portland', 'Detroit', 
+        'Sacramento', 'SanJose', 'NewOrleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
+    data = homeprice.get_detailed_info(cities)
+    homeprice.create_homeprices_table(cur, conn)
+    homeprice.add_prices_from_info(cur, conn, data)

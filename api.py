@@ -5,6 +5,7 @@ import os
 import sqlite3
 import main
 
+
 def get_request_url(list):
     url = f'https://api.waqi.info/feed/{list}/?token=3a04f5d06b3d0ec8317f0e97d4a6054a4a3d01fb'
     # r = requests.get(url).text
@@ -85,35 +86,75 @@ def add_AirQ_from_json(list,filename, cur, conn):
         url = get_request_url(i)
         raw_name=json_data[url]["city"]["name"]
         if i in raw_name:
-            raw_name = i
+            raw_name = list.index(i)
         else:
             if raw_name == "Chi_sp, Illinois, USA":
-                raw_name = "Chicago"
+                raw_name = "3"
             elif raw_name == "CAMP, Colorado, USA":
-                raw_name = "Denver"
-            elif raw_name == "CAMP, Colorado, USA":
-                raw_name = "Denver"
+                raw_name = "8"
             elif raw_name == "Taft, Ohio, USA":
-                raw_name = "Cincinnati"
+                raw_name = "10"
             elif raw_name == "Geronimo, Pima County, USA":
-                raw_name = "Tucson"
+                raw_name = "13"
+            elif raw_name == "Windsor":
+                raw_name = "17"
             elif raw_name == "United Ave., Georgia, USA":
-                raw_name = "Tucson"
+                raw_name = "21"
             elif raw_name == "Lake Isle Estates - Winter Park, Orange, Florida, USA":
-                raw_name = "Orlando"
+                raw_name = "23"
         dic[raw_name]={}
         for i in json_data[url]["forecast"]["daily"]["pm25"]:
             raw_pm25 = i['avg']
             raw_date = i['day']
-            dic[raw_name][raw_date]=raw_pm25
-        # cur.execute(f'SELECT id FROM Cities WHERE city LIKE %{i}%')
-    cur.execute('drop table if exists Air_quality')
-    cur.execute('create table Air_quality(id INTEGER PRIMARY KEY, city TEXT, date TEXT, pm25 INTEGER)')
-    id=0
+            dic[raw_name][raw_date]=raw_pm25 
+    data = []
     for i in dic:
-        # cur.execute('insert into Air_quality(id,city) values(?,?)',(id,i))
         for n,m in dic[i].items():
-            cur.execute('insert into Air_quality(id,city,date,pm25) values(?,?,?,?)',(id,i,n,m))
-            id+=1
+            new = [i,n,m]
+            data.append(new)
+        # cur.execute(f'SELECT id FROM Cities WHERE city LIKE %{i}%')
+    # cur.execute('create table if not exists Air_quality')
+    cur.execute('create table if not exists Air_quality(id INTEGER PRIMARY KEY, city TEXT, date TEXT, pm25 INTEGER)')
+    try:
+        count = cur.execute('SELECT id FROM Air_quality WHERE id = (SELECT MAX(id) FROM Air_quality)')
+        count = cur.fetchone()
+        count = count[0]
+    except:
+        count = 0
+    id = 1
+    for i in data[count:count+25]:
+        var_id = id + count
+        cur.execute('insert or ignore into Air_quality(id,city,date,pm25) values(?,?,?,?)',(var_id,i[0],i[1],i[2]))
+        id += 1
     conn.commit()
+    # count = 0
+    # for i in dic:
+    #     if count < 25:
+    #         for n,m in dic[i].items():
+    #             cur.execute('insert or ignore into Air_quality(id,city,date,pm25) values(?,?,?,?)',(id,i,n,m))
+    #             id+=1
+    #             count += 1
+    #     else:
+    #         count = 0
+    #         break
+    # conn.commit()
 
+    # for i in dic:
+    #     # cur.execute('insert into Air_quality(id,city) values(?,?)',(id,i))
+    #     for n,m in dic[i].items():
+    #         cur.execute('insert or ignore into Air_quality(id,city,date,pm25) values(?,?,?,?)',(id,i,n,m))
+    #         id+=1
+    # conn.commit()
+
+# def main():
+#     dir_path = os.path.dirname(os.path.realpath(__file__))
+#     cache_filename = dir_path + '/' + "cache_file.json"
+#     # city_list=['newyork','los angeles','seattle','Chicago','Houston']
+#     city_list=['New York', 'Los Angeles', 'Seattle', 'Chicago', 'Houston', 'Dallas', 'Austin', 'San Francisco', 'Denver', 'Boston', 'Cincinnati', 'Miami', 'San Diego', 'Tucson', 'Salt Lake City', 'Honolulu', 'Portland', 'Detroit', 'Sacramento', 'San Jose', 'New Orleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
+#     [get_data_using_cache(list, cache_filename) for list in city_list]
+#     cur, conn = main.setUpDatabase('city_id.db')
+#     create_cities_table(cur, conn)
+#     add_AirQ_from_json(city_list,'cache_file.json', cur, conn)
+
+
+# main()
