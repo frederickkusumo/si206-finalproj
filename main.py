@@ -34,3 +34,5 @@ if __name__ == '__main__':
         'Sacramento', 'SanJose', 'NewOrleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
     data = homeprice.get_detailed_info(cities)
     homeprice.add_prices_from_info(cur, conn, data)
+    x = api.joinData(cur,conn)
+    api.write_csv(x,"AirQuailyAvg.csv")
