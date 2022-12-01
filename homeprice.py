@@ -44,6 +44,19 @@ def add_prices_from_info(cur, conn, data):
         id += 1
     conn.commit()
 
+def avgprices(cur, conn, data):
+    cur.execute("SELECT city, ROUND(AVG(home_prices), 2) FROM Home_Price JOIN Cities ON Home_Price.city_id = Cities.id GROUP BY city_id")
+    rows = cur.fetchall()
+    return rows
+
+def tocsv(data, file):
+    with open(file, 'w') as f:
+        writer = csv.writer(f)
+        header = ['Cities', 'avg_home_price']
+        writer.writerow(header)
+        for info in data:
+            writer.writerow(info)
+
 if __name__ == '__main__':
     cities = ['NewYork', 'LosAngeles', 'Seattle', 'Chicago', 'Houston', 'Dallas', 'Austin', 'SanFrancisco', 'Denver', 
         'Boston', 'Cincinnati', 'Miami', 'SanDiego', 'Tucson', 'SaltLakeCity', 'Honolulu', 'Portland', 'Detroit', 
