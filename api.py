@@ -4,6 +4,7 @@ import unittest
 import os
 import sqlite3
 import main
+import csv
 
 
 def get_request_url(list):
@@ -127,34 +128,22 @@ def add_AirQ_from_json(list,filename, cur, conn):
         cur.execute('insert or ignore into Air_quality(id,city,date,pm25) values(?,?,?,?)',(var_id,i[0],i[1],i[2]))
         id += 1
     conn.commit()
+
+def joinData(cur, conn):
+    # x = cur.execute("SELECT Cities.city, Air_quality.date, Air_quality.pm25, Home_Price.home_prices FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id JOIN Home_Price ON Home_Price.city_id = Cities.id")
+    # x = cur.execute("SELECT Cities.city, (AVG(Air_quality.pm25) FROM Air_quality where city = ) FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id")
+    cur.execute("SELECT Cities.city, ROUND(AVG(Air_quality.pm25), 2) FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id GROUP BY Air_quality.city")
+    x = cur.fetchall()
     # count = 0
-    # for i in dic:
-    #     if count < 25:
-    #         for n,m in dic[i].items():
-    #             cur.execute('insert or ignore into Air_quality(id,city,date,pm25) values(?,?,?,?)',(id,i,n,m))
-    #             id+=1
-    #             count += 1
-    #     else:
-    #         count = 0
-    #         break
-    # conn.commit()
+    # for i in x:
+    #     print(i)
+    #     count += 1
+    #     dic[i[0]] = (dic.get(i[0], 0) + i[1])
+    return(x)
 
-    # for i in dic:
-    #     # cur.execute('insert into Air_quality(id,city) values(?,?)',(id,i))
-    #     for n,m in dic[i].items():
-    #         cur.execute('insert or ignore into Air_quality(id,city,date,pm25) values(?,?,?,?)',(id,i,n,m))
-    #         id+=1
-    # conn.commit()
-
-# def main():
-#     dir_path = os.path.dirname(os.path.realpath(__file__))
-#     cache_filename = dir_path + '/' + "cache_file.json"
-#     # city_list=['newyork','los angeles','seattle','Chicago','Houston']
-#     city_list=['New York', 'Los Angeles', 'Seattle', 'Chicago', 'Houston', 'Dallas', 'Austin', 'San Francisco', 'Denver', 'Boston', 'Cincinnati', 'Miami', 'San Diego', 'Tucson', 'Salt Lake City', 'Honolulu', 'Portland', 'Detroit', 'Sacramento', 'San Jose', 'New Orleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
-#     [get_data_using_cache(list, cache_filename) for list in city_list]
-#     cur, conn = main.setUpDatabase('city_id.db')
-#     create_cities_table(cur, conn)
-#     add_AirQ_from_json(city_list,'cache_file.json', cur, conn)
-
-
-# main()
+def write_csv(data, filename):
+    first_row = ["City", "Avg Air Quality"]
+    with open(filename, 'w') as file:
+        writer = csv.writer(file)
+        writer.writerow(first_row)
+        writer.writerows(data)
