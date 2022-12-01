@@ -33,5 +33,4 @@ if __name__ == '__main__':
         'Boston', 'Cincinnati', 'Miami', 'SanDiego', 'Tucson', 'SaltLakeCity', 'Honolulu', 'Portland', 'Detroit', 
         'Sacramento', 'SanJose', 'NewOrleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
     data = homeprice.get_detailed_info(cities)
-    homeprice.create_homeprices_table(cur, conn)
     homeprice.add_prices_from_info(cur, conn, data)

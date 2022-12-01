@@ -29,15 +29,18 @@ def get_detailed_info(cities):
         city_id += 1
     return data
 
-def create_homeprices_table(cur, conn):
-    cur.execute('CREATE TABLE IF NOT EXISTS Home_Price (id INTEGER PRIMARY KEY, city_id INTEGER, home_prices INTEGER)')
-    conn.commit()
-
 def add_prices_from_info(cur, conn, data):
+    cur.execute('CREATE TABLE IF NOT EXISTS Home_Price (id INTEGER PRIMARY KEY, city_id INTEGER, home_prices INTEGER)')
+    try:
+        count = cur.execute('SELECT id FROM Home_Price WHERE id = (SELECT MAX(id) FROM Home_Price)')
+        count = cur.fetchone()
+        count = count[0]
+    except:
+        count = 0
     id = 1
-    for i in data:
-        cur.execute("INSERT OR IGNORE INTO Home_Price (id, city_id, home_prices) VALUES (?,?,?)",
-            (id, i[0], i[1]))
+    for i in data[count:count+25]:
+        var_id = id + count
+        cur.execute("INSERT OR IGNORE INTO Home_Price (id, city_id, home_prices) VALUES (?,?,?)", (var_id, i[0], i[1]))
         id += 1
     conn.commit()
 
