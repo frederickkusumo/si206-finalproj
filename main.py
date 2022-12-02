@@ -3,12 +3,9 @@ import sqlite3
 import json
 import api
 import homeprice
-<<<<<<< Updated upstream
 import plotly.express as px
 import plotly.graph_objects as go
-=======
 import Population
->>>>>>> Stashed changes
 
 def setUpDatabase(db_name):
     path = os.path.dirname(os.path.abspath(__file__))
@@ -41,7 +38,6 @@ if __name__ == '__main__':
     
     data = homeprice.get_detailed_info(cities)
     homeprice.add_prices_from_info(cur, conn, data)
-<<<<<<< Updated upstream
     avg = homeprice.avgprices(cur, conn, data)
     homeprice.tocsv(avg, 'average_home_price.csv')
     cities_list = []
@@ -83,8 +79,6 @@ if __name__ == '__main__':
     # fig.add_trace(go.Scatter(x=LA_date_list, y=LA_aq_list))
     # fig.add_trace(go.Scatter(x=LA_date_list, y=NYdifLA_list))
     # fig.show()
-=======
 
     population_dictionary = Population.create_population_dict()
     Population.AV_create_database(population_dictionary,cur,conn)
->>>>>>> Stashed changes
