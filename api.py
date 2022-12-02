@@ -5,7 +5,8 @@ import os
 import sqlite3
 import main
 import csv
-
+import plotly.express as px
+import plotly.graph_objects as go
 
 def get_request_url(list):
     url = f'https://api.waqi.info/feed/{list}/?token=3a04f5d06b3d0ec8317f0e97d4a6054a4a3d01fb'
@@ -129,18 +130,13 @@ def add_AirQ_from_json(list,filename, cur, conn):
         id += 1
     conn.commit()
 
+
 def joinDataAVG(cur, conn):
-    # x = cur.execute("SELECT Cities.city, Air_quality.date, Air_quality.pm25, Home_Price.home_prices FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id JOIN Home_Price ON Home_Price.city_id = Cities.id")
-    # x = cur.execute("SELECT Cities.city, (AVG(Air_quality.pm25) FROM Air_quality where city = ) FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id")
-    cur.execute("SELECT CITIES.city, ROUND(AVG(Air_quality.pm25), 2) FROM Air_quality JOIN Cities ON Air_quality.city_id = Cities.id GROUP BY city_id")
+    cur.execute("SELECT city, ROUND(AVG(pm25), 2) FROM Air_quality JOIN Cities ON Air_quality.city_id = Cities.id GROUP BY city_id ORDER BY citygit")
+    # cur.execute("SELECT city, ROUND(AVG(home_prices), 2) FROM Home_Price JOIN Cities ON Home_Price.city_id = Cities.id GROUP BY city_id")
     x = cur.fetchall()
-    # count = 0
-    # for i in x:
-    #     print(i)
-    #     count += 1
-    #     dic[i[0]] = (dic.get(i[0], 0) + i[1])
-    print("AVG:", x)
-    return x
+    return(x)
+
 
 def write_csv(data, filename):
     first_row = ["City", "Avg Air Quality"]
@@ -159,13 +155,13 @@ def read_csvTo2list(filename,city_list,aq_list):
     return city_list,aq_list 
 
 def NYjoinData(cur, conn):
-    x = cur.execute("SELECT Cities.city, Air_quality.date,Air_quality.pm25 FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id AND Air_quality.city = 0")
+    x = cur.execute("SELECT Cities.city, Air_quality.date,Air_quality.pm25 FROM Air_quality JOIN Cities ON Air_quality.city_id = Cities.id AND Air_quality.city_id = 0")
     return x
 
 def LAjoinData(cur, conn):
-    y = cur.execute("SELECT Cities.city, Air_quality.date,Air_quality.pm25 FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id AND Air_quality.city = 1")
+    y = cur.execute("SELECT Cities.city, Air_quality.date,Air_quality.pm25 FROM Air_quality JOIN Cities ON Air_quality.city_id = Cities.id AND Air_quality.city_id = 1")
     return y
-    
+
 def write_csv3(data, filename):
     first_row = ["City", "Date","Air Quality"]
     with open(filename, 'w') as file:
@@ -182,3 +178,31 @@ def read_csvTo3list(filename,city_list,date_list,aq_list):
         date_list.append(i[1])
         aq_list.append(float(i[2]))
     return city_list,date_list,aq_list 
+
+
+def graph2(cur,conn):
+    #Graph Two (NY-LA)
+    v = NYjoinData(cur,conn)
+    write_csv3(v,"NYAirQuailyDaily.csv")
+    NY_city_list=[]
+    NY_date_list=[]
+    NY_aq_list=[]
+    read_csvTo3list("NYAirQuailyDaily.csv",NY_city_list,NY_date_list,NY_aq_list)
+
+    v = LAjoinData(cur,conn)
+    write_csv3(v,"LAAirQuailyDaily.csv")
+    LA_city_list=[]
+    LA_date_list=[]
+    LA_aq_list=[]
+    read_csvTo3list("LAAirQuailyDaily.csv",LA_city_list,LA_date_list,LA_aq_list)
+
+    NYdifLA_list=[]
+    for i in range(len(NY_city_list)):
+        different = NY_aq_list[i]-LA_aq_list[i]
+        NYdifLA_list.append(different)
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=NY_date_list, y=NY_aq_list))
+    fig.add_trace(go.Scatter(x=LA_date_list, y=LA_aq_list))
+    fig.add_trace(go.Scatter(x=LA_date_list, y=NYdifLA_list))
+    fig.show()
