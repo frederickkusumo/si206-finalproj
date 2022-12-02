@@ -3,6 +3,8 @@ import sqlite3
 import json
 import api
 import homeprice
+import plotly.express as px
+import plotly.graph_objects as go
 
 def setUpDatabase(db_name):
     path = os.path.dirname(os.path.abspath(__file__))
@@ -32,11 +34,40 @@ if __name__ == '__main__':
     cities = ['NewYork', 'LosAngeles', 'Seattle', 'Chicago', 'Houston', 'Dallas', 'Austin', 'SanFrancisco', 'Denver', 
         'Boston', 'Cincinnati', 'Miami', 'SanDiego', 'Tucson', 'SaltLakeCity', 'Honolulu', 'Portland', 'Detroit', 
         'Sacramento', 'SanJose', 'NewOrleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
-        
     data = homeprice.get_detailed_info(cities)
     homeprice.add_prices_from_info(cur, conn, data)
-    avg = homeprice.avgprices(cur, conn, data)
-    homeprice.tocsv(avg, 'average_home_price.csv')
+    # x = api.joinDataAVG(cur,conn)
+    # api.write_csv(x,"AirQuailyAvg.csv")
+    # city_list=[]
+    # aq_list=[]
+    # api.read_csvTolist("AirQuailyAvg.csv",city_list,aq_list)
 
-    x = api.joinData(cur,conn)
-    api.write_csv(x,"AirQuailyAvg.csv")
+    
+    # fig = px.bar(x=city_list, y=aq_list, color=aq_list, color_continuous_scale='bluered')
+    # fig.show()
+
+    #Graph Two (NY-LA)
+    v = api.NYjoinData(cur,conn)
+    api.write_csv3(v,"NYAirQuailyDaily.csv")
+    NY_city_list=[]
+    NY_date_list=[]
+    NY_aq_list=[]
+    api.read_csvTo3list("NYAirQuailyDaily.csv",NY_city_list,NY_date_list,NY_aq_list)
+
+    v = api.LAjoinData(cur,conn)
+    api.write_csv3(v,"LAAirQuailyDaily.csv")
+    LA_city_list=[]
+    LA_date_list=[]
+    LA_aq_list=[]
+    api.read_csvTo3list("LAAirQuailyDaily.csv",LA_city_list,LA_date_list,LA_aq_list)
+
+    NYdifLA_list=[]
+    for i in range(len(NY_city_list)):
+        different = NY_aq_list[i]-LA_aq_list[i]
+        NYdifLA_list.append(different)
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=NY_date_list, y=NY_aq_list))
+    fig.add_trace(go.Scatter(x=LA_date_list, y=LA_aq_list))
+    fig.add_trace(go.Scatter(x=LA_date_list, y=NYdifLA_list))
+    fig.show()
