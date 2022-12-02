@@ -1,8 +1,7 @@
 from xml.sax import parseString
 from bs4 import BeautifulSoup
 import os
-import main
-import json
+import csv
 
 def get_price_info(html_file):
     source_dir = os.path.dirname(__file__) 

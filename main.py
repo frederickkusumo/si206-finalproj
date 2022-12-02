@@ -34,8 +34,15 @@ if __name__ == '__main__':
     cities = ['NewYork', 'LosAngeles', 'Seattle', 'Chicago', 'Houston', 'Dallas', 'Austin', 'SanFrancisco', 'Denver', 
         'Boston', 'Cincinnati', 'Miami', 'SanDiego', 'Tucson', 'SaltLakeCity', 'Honolulu', 'Portland', 'Detroit', 
         'Sacramento', 'SanJose', 'NewOrleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
+    
     data = homeprice.get_detailed_info(cities)
     homeprice.add_prices_from_info(cur, conn, data)
+    avg = homeprice.avgprices(cur, conn, data)
+    homeprice.tocsv(avg, 'average_home_price.csv')
+    cities_list = []
+    avgprice_list = []
+    api.read_csvTo2list("average_home_price.csv",cities_list,avgprice_list)
+
     # x = api.joinDataAVG(cur,conn)
     # api.write_csv(x,"AirQuailyAvg.csv")
     # city_list=[]
