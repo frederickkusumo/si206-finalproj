@@ -115,7 +115,7 @@ def add_AirQ_from_json(list,filename, cur, conn):
             data.append(new)
         # cur.execute(f'SELECT id FROM Cities WHERE city LIKE %{i}%')
     # cur.execute('create table if not exists Air_quality')
-    cur.execute('create table if not exists Air_quality(id INTEGER PRIMARY KEY, city TEXT, date TEXT, pm25 INTEGER)')
+    cur.execute('create table if not exists Air_quality(id INTEGER PRIMARY KEY, city_id TEXT, date TEXT, pm25 INTEGER)')
     try:
         count = cur.execute('SELECT id FROM Air_quality WHERE id = (SELECT MAX(id) FROM Air_quality)')
         count = cur.fetchone()
@@ -125,21 +125,22 @@ def add_AirQ_from_json(list,filename, cur, conn):
     id = 1
     for i in data[count:count+25]:
         var_id = id + count
-        cur.execute('insert or ignore into Air_quality(id,city,date,pm25) values(?,?,?,?)',(var_id,i[0],i[1],i[2]))
+        cur.execute('insert or ignore into Air_quality(id,city_id,date,pm25) values(?,?,?,?)',(var_id,i[0],i[1],i[2]))
         id += 1
     conn.commit()
 
 def joinDataAVG(cur, conn):
     # x = cur.execute("SELECT Cities.city, Air_quality.date, Air_quality.pm25, Home_Price.home_prices FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id JOIN Home_Price ON Home_Price.city_id = Cities.id")
     # x = cur.execute("SELECT Cities.city, (AVG(Air_quality.pm25) FROM Air_quality where city = ) FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id")
-    cur.execute("SELECT Cities.city, ROUND(AVG(Air_quality.pm25), 2) FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id GROUP BY Air_quality.city")
+    cur.execute("SELECT CITIES.city, ROUND(AVG(Air_quality.pm25), 2) FROM Air_quality JOIN Cities ON Air_quality.city_id = Cities.id GROUP BY city_id")
     x = cur.fetchall()
     # count = 0
     # for i in x:
     #     print(i)
     #     count += 1
     #     dic[i[0]] = (dic.get(i[0], 0) + i[1])
-    return(x)
+    print("AVG:", x)
+    return x
 
 def write_csv(data, filename):
     first_row = ["City", "Avg Air Quality"]
