@@ -54,31 +54,31 @@ if __name__ == '__main__':
     fig = px.bar(x=city_list, y=avgprice_list, color=aq_list, color_continuous_scale='bluered')
     fig.show()
 
-    #Graph Two (NY-LA)
-    # v = api.NYjoinData(cur,conn)
-    # api.write_csv3(v,"NYAirQuailyDaily.csv")
-    # NY_city_list=[]
-    # NY_date_list=[]
-    # NY_aq_list=[]
-    # api.read_csvTo3list("NYAirQuailyDaily.csv",NY_city_list,NY_date_list,NY_aq_list)
+    # Graph Two (NY-LA)
+    v = api.NYjoinData(cur,conn)
+    api.write_csv3(v,"NYAirQuailyDaily.csv")
+    NY_city_list=[]
+    NY_date_list=[]
+    NY_aq_list=[]
+    api.read_csvTo3list("NYAirQuailyDaily.csv",NY_city_list,NY_date_list,NY_aq_list)
 
-    # v = api.LAjoinData(cur,conn)
-    # api.write_csv3(v,"LAAirQuailyDaily.csv")
-    # LA_city_list=[]
-    # LA_date_list=[]
-    # LA_aq_list=[]
-    # api.read_csvTo3list("LAAirQuailyDaily.csv",LA_city_list,LA_date_list,LA_aq_list)
+    v = api.LAjoinData(cur,conn)
+    api.write_csv3(v,"LAAirQuailyDaily.csv")
+    LA_city_list=[]
+    LA_date_list=[]
+    LA_aq_list=[]
+    api.read_csvTo3list("LAAirQuailyDaily.csv",LA_city_list,LA_date_list,LA_aq_list)
 
-    # NYdifLA_list=[]
-    # for i in range(len(NY_city_list)):
-    #     different = NY_aq_list[i]-LA_aq_list[i]
-    #     NYdifLA_list.append(different)
+    NYdifLA_list=[]
+    for i in range(len(NY_city_list)):
+        different = NY_aq_list[i]-LA_aq_list[i]
+        NYdifLA_list.append(different)
 
-    # fig = go.Figure()
-    # fig.add_trace(go.Scatter(x=NY_date_list, y=NY_aq_list))
-    # fig.add_trace(go.Scatter(x=LA_date_list, y=LA_aq_list))
-    # fig.add_trace(go.Scatter(x=LA_date_list, y=NYdifLA_list))
-    # fig.show()
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=NY_date_list, y=NY_aq_list))
+    fig.add_trace(go.Scatter(x=LA_date_list, y=LA_aq_list))
+    fig.add_trace(go.Scatter(x=LA_date_list, y=NYdifLA_list))
+    fig.show()
 
     population_dictionary = Population.create_population_dict()
     Population.AV_create_database(population_dictionary,cur,conn)
