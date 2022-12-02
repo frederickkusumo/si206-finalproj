@@ -129,7 +129,7 @@ def add_AirQ_from_json(list,filename, cur, conn):
         id += 1
     conn.commit()
 
-def joinData(cur, conn):
+def joinDataAVG(cur, conn):
     # x = cur.execute("SELECT Cities.city, Air_quality.date, Air_quality.pm25, Home_Price.home_prices FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id JOIN Home_Price ON Home_Price.city_id = Cities.id")
     # x = cur.execute("SELECT Cities.city, (AVG(Air_quality.pm25) FROM Air_quality where city = ) FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id")
     cur.execute("SELECT Cities.city, ROUND(AVG(Air_quality.pm25), 2) FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id GROUP BY Air_quality.city")
@@ -147,3 +147,37 @@ def write_csv(data, filename):
         writer = csv.writer(file)
         writer.writerow(first_row)
         writer.writerows(data)
+        
+def read_csvTo2list(filename,city_list,aq_list):
+    with open(filename, newline='') as f:
+        reader = csv.reader(f)
+        data = list(reader)
+    for i in data[1:]:
+        city_list.append(i[0])
+        aq_list.append(float(i[1]))
+    return city_list,aq_list 
+
+def NYjoinData(cur, conn):
+    x = cur.execute("SELECT Cities.city, Air_quality.date,Air_quality.pm25 FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id AND Air_quality.city = 0")
+    return x
+
+def LAjoinData(cur, conn):
+    y = cur.execute("SELECT Cities.city, Air_quality.date,Air_quality.pm25 FROM Air_quality JOIN Cities ON Air_quality.city = Cities.id AND Air_quality.city = 1")
+    return y
+    
+def write_csv3(data, filename):
+    first_row = ["City", "Date","Air Quality"]
+    with open(filename, 'w') as file:
+        writer = csv.writer(file)
+        writer.writerow(first_row)
+        writer.writerows(data)
+
+def read_csvTo3list(filename,city_list,date_list,aq_list):
+    with open(filename, newline='') as f:
+        reader = csv.reader(f)
+        data = list(reader)
+    for i in data[1:]:
+        city_list.append(i[0])
+        date_list.append(i[1])
+        aq_list.append(float(i[2]))
+    return city_list,date_list,aq_list 
