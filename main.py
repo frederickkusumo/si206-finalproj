@@ -38,20 +38,20 @@ if __name__ == '__main__':
     
     data = homeprice.get_detailed_info(cities)
     homeprice.add_prices_from_info(cur, conn, data)
-    avg = homeprice.avgprices(cur, conn, data)
+    avg = homeprice.avgprices(cur, conn, "home_prices", "Home_Price", "Home_Price.city_id")
     homeprice.tocsv(avg, 'average_home_price.csv')
     cities_list = []
     avgprice_list = []
     api.read_csvTo2list("average_home_price.csv",cities_list,avgprice_list)
 
-    x = api.joinDataAVG(cur,conn)
+    x = homeprice.avgprices(cur,conn,"pm25","Air_quality", "Air_quality.city_id")
     api.write_csv(x,"AirQuailyAvg.csv")
     city_list=[]
     aq_list=[]
     api.read_csvTo2list("AirQuailyAvg.csv",city_list,aq_list)
 
     
-    fig = px.bar(x=city_list, y=aq_list, color=aq_list, color_continuous_scale='bluered')
+    fig = px.bar(x=city_list, y=avgprice_list, color=aq_list, color_continuous_scale='bluered')
     fig.show()
 
     #Graph Two (NY-LA)
