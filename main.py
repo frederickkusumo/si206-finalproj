@@ -36,26 +36,21 @@ if __name__ == '__main__':
     avgprice_list = []
     api.read_csvTo2list("average_home_price.csv",cities_list,avgprice_list)
     
-    fig1 = px.bar(x=cities_list, y=avgprice_list)
-    fig1.update_layout(title="Average Home Prices", xaxis_title="Cities", yaxis_title="Home Prices")
-    
     x = homeprice.avgprices(cur,conn,"pm25","Air_quality", "Air_quality.city_id")
     api.write_csv(x,"AirQuailyAvg.csv")
     city_list=[]
     aq_list=[]
     api.read_csvTo2list("AirQuailyAvg.csv",city_list,aq_list)
     
-    # fig2 = px.bar(x=city_list, y=avgprice_list, color=aq_list, color_continuous_scale='bluered')
-    fig2 = make_subplots(specs=[[{"secondary_y": True}]])
-    fig2.add_trace(go.Bar(x=city_list, y=avgprice_list, name="yaxis values"),secondary_y=False)
-    fig2.add_trace(go.Scatter(x=city_list, y=aq_list, name="yaxis2 values"),secondary_y=True,)
-    # fig2.update_layout(title="Average Air Quality vs Average Home Prices", xaxis_title="Cities", yaxis_title="Home Prices")
-    fig2.update_layout(title_text="Average Air Quality vs Average Home Prices")
-    fig2.update_xaxes(title_text="Cities")
-    fig2.update_yaxes(title_text="Average Home Price", secondary_y=False)
-    fig2.update_yaxes(title_text="Average AQI", secondary_y=True)
+    fig1 = make_subplots(specs=[[{"secondary_y": True}]])
+    fig1.add_trace(go.Bar(x=city_list, y=avgprice_list, name="Average Home Price", marker_color='lightslategrey'),secondary_y=False)
+    fig1.add_trace(go.Scatter(x=city_list, y=aq_list, name="Average AQI", marker=dict(size=10), mode='markers',marker_color='crimson'),secondary_y=True,)
+    fig1.update_layout(title_text="Average Air Quality vs Average Home Prices")
+    fig1.update_xaxes(title_text="Cities")
+    fig1.update_yaxes(title_text="Average Home Price", secondary_y=False)
+    fig1.update_yaxes(title_text="Average AQI", secondary_y=True)
 
-    fig3=api.graph2(cur,conn)
+    fig2=api.graph2(cur,conn)
         
     population_tup_list = Population.create_population_dict()
     Population.AV_create_database(population_tup_list,cur,conn)
@@ -65,16 +60,29 @@ if __name__ == '__main__':
     city = []
     api.read_csvTo2list("CityPopulation.csv",city,pop_list)
 
-    fig4 = make_subplots(specs=[[{"secondary_y": True}]])
-    fig4.add_trace(go.Bar(x=city_list, y=avgprice_list, name="yaxis values"),secondary_y=False)
-    fig4.add_trace(go.Bar(x=city_list, y=pop_list, name="yaxis2 values"), secondary_y=True,)
-    fig4.update_layout(title_text="Average Home Price vs Population")
-    fig4.update_xaxes(title_text="Cities")
-    fig4.update_yaxes(title_text="Average Home Price", secondary_y=False)
-    fig4.update_yaxes(title_text="Population", secondary_y=True)
+    fig3= (go.Figure(
+    data=[
+        go.Bar(name='Average Home Price', x=city_list, y=avgprice_list, yaxis='y', marker_color='lightslategrey', offsetgroup=1),
+        go.Bar(name='Average AQI', x=city_list, y=pop_list, yaxis='y2', marker_color='crimson', offsetgroup=2)
+    ],
+    layout={
+        'xaxis':  {'title': 'Cities'},
+        'yaxis': {'title': 'Average Home Price'},
+        'yaxis2': {'title': 'Population', 'overlaying': 'y', 'side': 'right'}
+    }
+    ))
+    fig3.update_layout(title_text="Average Home Price vs Population", barmode='group')
 
-    fig5 = px.bar(x=cities_list, y=pop_list)
-    fig5.update_layout(title="Populations", xaxis_title="Cities", yaxis_title="Population")
+    fig4 = px.bar(x=cities_list, y=pop_list)
+    fig4.update_layout(title="Populations", xaxis_title="Cities", yaxis_title="Population")
+
+    fig5 = make_subplots(specs=[[{"secondary_y": True}]])
+    fig5.add_trace(go.Bar(x=city_list, y=pop_list, name="Population", marker_color='lightslategrey'),secondary_y=False)
+    fig5.add_trace(go.Scatter(x=city_list, y=aq_list, name="Average AQI", marker=dict(size=10), mode='markers',marker_color='crimson'),secondary_y=True,)
+    fig5.update_layout(title_text="Average Air Quality vs Population")
+    fig5.update_xaxes(title_text="Cities")
+    fig5.update_yaxes(title_text="Population", secondary_y=False)
+    fig5.update_yaxes(title_text="Average AQI", secondary_y=True)
 
     if fig1 and fig2 and fig3 and fig4 and fig5:
         fig1.show()
