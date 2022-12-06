@@ -6,7 +6,7 @@ import csv
 def get_price_info(html_file):
     source_dir = os.path.dirname(__file__) 
     full_path = os.path.join(source_dir, html_file)
-    file = open(full_path,'r')
+    file = open(full_path,'r', encoding='UTF-8')
     file_handle = file.read()
     file.close()
 
@@ -49,7 +49,7 @@ def avgprices(cur, conn, avg, table, city):
     return rows
 
 def tocsv(data, file):
-    with open(file, 'w') as f:
+    with open(file, 'w', newline ='') as f:
         writer = csv.writer(f)
         header = ['Cities', 'avg_home_price']
         writer.writerow(header)
