@@ -14,9 +14,7 @@ def setUpDatabase(db_name):
     return cur, conn
 
 if __name__ == '__main__':
-    # try:
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    cache_filename = dir_path + '/' + "cache_file.json"
     city_list=['New York', 'Los Angeles', 'Seattle', 'Chicago', 'Houston', 'Dallas', 'Austin', 'San Francisco', 'Denver', 'Boston', 'Cincinnati', 'Miami', 'San Diego', 'Tucson', 'Salt Lake City', 'Honolulu', 'Portland', 'Detroit', 'Sacramento', 'San Jose', 'New Orleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
 
     lst = [api.get_data_using_cache(list) for list in city_list]
@@ -73,7 +71,14 @@ if __name__ == '__main__':
     ))
     fig3.update_layout(title_text="Average Home Price vs Population", barmode='group')
 
-    fig4 = px.bar(x=cities_list, y=pop_list)
+    d = dict(zip(cities_list, pop_list))
+    sd = sorted(d.items(), key = lambda x: x[1])
+    c = []
+    p = []
+    for i in sd:
+        c.append(i[0])
+        p.append(i[1])
+    fig4 = px.bar(x=c, y=p)
     fig4.update_layout(title="Populations", xaxis_title="Cities", yaxis_title="Population")
 
     fig5 = make_subplots(specs=[[{"secondary_y": True}]])
@@ -90,5 +95,3 @@ if __name__ == '__main__':
         fig3.show()
         fig4.show()
         fig5.show()
-    # except:
-    #     print("TRY AGAIN!")

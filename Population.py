@@ -24,9 +24,7 @@ def create_population_dict():
         id_count += 1
     return population_tup_list
 
-
 def AV_create_database(population_tup_list,cur,conn):
-    # cur.execute("DROP TABLE IF EXISTS CityPopulations")
     cur.execute("CREATE TABLE IF NOT EXISTS CityPopulations (id INTEGER PRIMARY KEY, city_id INTEGER, population INTEGER)")
     try:
         count = cur.execute('SELECT id FROM CityPopulations WHERE id = (SELECT MAX(id) FROM CityPopulations)')

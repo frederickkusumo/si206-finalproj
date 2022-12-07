@@ -14,9 +14,7 @@ def get_data_using_cache(list):
     print(f"Fetching data for {list}")
     try:
         x = requests.get(url).text
-        # print(x)
         y = json.loads(x)
-        # print(y)
         if y["status"] == "ok":
             dict[url] = y["data"]
             return dict.get(url)
@@ -89,7 +87,6 @@ def add_AirQ_from_json(list,data, cur, conn):
 
 def joinDataAVG(cur, conn):
     cur.execute("SELECT city, ROUND(AVG(pm25), 2) FROM Air_quality JOIN Cities ON Air_quality.city_id = Cities.id GROUP BY city_id ORDER BY citygit")
-    # cur.execute("SELECT city, ROUND(AVG(home_prices), 2) FROM Home_Price JOIN Cities ON Home_Price.city_id = Cities.id GROUP BY city_id")
     x = cur.fetchall()
     return(x)
 
@@ -109,10 +106,6 @@ def read_csvTo2list(filename,city_list,aq_list):
             if len(i) > 0:
                 city_list.append(i[0])
                 aq_list.append(float(i[1]))
-    #     data = list(reader)
-    # for i in data[1:]:
-    #     city_list.append(i[0])
-    #     aq_list.append(float(i[1]))
         return city_list,aq_list 
 
 def NYjoinData(cur, conn):

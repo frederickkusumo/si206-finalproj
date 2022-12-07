@@ -13,8 +13,6 @@ def get_price_info(html_file):
     soup = BeautifulSoup(file_handle, 'html.parser')
     price = soup.find_all('span', {'data-test':"property-card-price"})
     first_ten = [int(i.text.replace('$', '').replace(',', '').replace('+', ''))  for i in price[:9]]
-    # avg = round(sum(first_ten)/len(first_ten), 2)
-    # first_ten.append(avg)
     return first_ten
 
 def get_detailed_info(cities):
@@ -55,11 +53,3 @@ def tocsv(data, file):
         writer.writerow(header)
         for info in data:
             writer.writerow(info)
-
-if __name__ == '__main__':
-    cities = ['NewYork', 'LosAngeles', 'Seattle', 'Chicago', 'Houston', 'Dallas', 'Austin', 'SanFrancisco', 'Denver', 
-        'Boston', 'Cincinnati', 'Miami', 'SanDiego', 'Tucson', 'SaltLakeCity', 'Honolulu', 'Portland', 'Detroit', 
-        'Sacramento', 'SanJose', 'NewOrleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
-    data = get_detailed_info(cities)
-    # add_prices_from_info(data)
-    # main.write_json('prices_dataset.json', data)
