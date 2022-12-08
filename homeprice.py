@@ -41,7 +41,7 @@ def add_prices_from_info(cur, conn, data):
         id += 1
     conn.commit()
 
-def avgprices(cur, conn, avg, table, city):
+def avgprices(cur, avg, table, city):
     cur.execute(f"SELECT city, ROUND(AVG({avg}), 2) FROM {table} JOIN Cities ON {city} = Cities.id GROUP BY city_id ORDER BY city ASC")
     rows = cur.fetchall()
     return rows
@@ -51,5 +51,4 @@ def tocsv(data, file):
         writer = csv.writer(f)
         header = ['Cities', 'avg_home_price']
         writer.writerow(header)
-        for info in data:
-            writer.writerow(info)
+        writer.writerows(data)

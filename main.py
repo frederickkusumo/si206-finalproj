@@ -15,7 +15,7 @@ def setUpDatabase(db_name):
 
 if __name__ == '__main__':
     dir_path = os.path.dirname(os.path.realpath(__file__))
-    city_list=['New York', 'Los Angeles', 'Seattle', 'Chicago', 'Houston', 'Dallas', 'Austin', 'San Francisco', 'Denver', 'Boston', 'Cincinnati', 'Miami', 'San Diego', 'Tucson', 'Salt Lake City', 'Honolulu', 'Portland', 'Detroit', 'Sacramento', 'San Jose', 'New Orleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
+    city_list = ['New York', 'Los Angeles', 'Seattle', 'Chicago', 'Houston', 'Dallas', 'Austin', 'San Francisco', 'Denver', 'Boston', 'Cincinnati', 'Miami', 'San Diego', 'Tucson', 'Salt Lake City', 'Honolulu', 'Portland', 'Detroit', 'Sacramento', 'San Jose', 'New Orleans', 'Atlanta', 'Minneapolis', 'Orlando', 'Phoenix']
 
     lst = [api.get_data_using_cache(list) for list in city_list]
     cur, conn = setUpDatabase('city_id.db')
@@ -28,17 +28,17 @@ if __name__ == '__main__':
     
     data = homeprice.get_detailed_info(cities)
     homeprice.add_prices_from_info(cur, conn, data)
-    avg = homeprice.avgprices(cur, conn, "home_prices", "Home_Price", "Home_Price.city_id")
+    avg = homeprice.avgprices(cur, "home_prices", "Home_Price", "Home_Price.city_id")
     homeprice.tocsv(avg, 'average_home_price.csv')
     cities_list = []
     avgprice_list = []
     api.read_csvTo2list("average_home_price.csv",cities_list,avgprice_list)
     
-    x = homeprice.avgprices(cur,conn,"pm25","Air_quality", "Air_quality.city_id")
-    api.write_csv(x,"AirQuailyAvg.csv")
-    city_list=[]
-    aq_list=[]
-    api.read_csvTo2list("AirQuailyAvg.csv",city_list,aq_list)
+    x = homeprice.avgprices(cur,"pm25","Air_quality", "Air_quality.city_id")
+    api.write_csv(x,"AirQualityAvg.csv")
+    city_list = []
+    aq_list = []
+    api.read_csvTo2list("AirQualityAvg.csv",city_list,aq_list)
     
     fig1 = make_subplots(specs=[[{"secondary_y": True}]])
     fig1.add_trace(go.Bar(x=city_list, y=avgprice_list, name="Average Home Price", marker_color='lightslategrey'),secondary_y=False)
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     fig1.update_yaxes(title_text="Average Home Price", secondary_y=False)
     fig1.update_yaxes(title_text="Average AQI", secondary_y=True)
 
-    fig2=api.graph2(cur,conn)
+    fig2 = api.graph2(cur,conn)
         
     population_tup_list = Population.create_population_dict()
     Population.AV_create_database(population_tup_list,cur,conn)
@@ -58,12 +58,12 @@ if __name__ == '__main__':
     city = []
     api.read_csvTo2list("CityPopulation.csv",city,pop_list)
 
-    fig3= (go.Figure(
-    data=[
+    fig3 = (go.Figure(
+    data = [
         go.Bar(name='Average Home Price', x=city_list, y=avgprice_list, yaxis='y', marker_color='lightslategrey', offsetgroup=1),
-        go.Bar(name='Average AQI', x=city_list, y=pop_list, yaxis='y2', marker_color='crimson', offsetgroup=2)
+        go.Bar(name='Population', x=city_list, y=pop_list, yaxis='y2', marker_color='crimson', offsetgroup=2)
     ],
-    layout={
+    layout = {
         'xaxis':  {'title': 'Cities'},
         'yaxis': {'title': 'Average Home Price'},
         'yaxis2': {'title': 'Population', 'overlaying': 'y', 'side': 'right'}
@@ -89,7 +89,7 @@ if __name__ == '__main__':
     fig5.update_yaxes(title_text="Population", secondary_y=False)
     fig5.update_yaxes(title_text="Average AQI", secondary_y=True)
 
-    if fig1 and fig2 and fig3 and fig4 and fig5:
+    if len(avgprice_list) == 25:
         fig1.show()
         fig2.show()
         fig3.show()

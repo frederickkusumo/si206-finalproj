@@ -1,7 +1,6 @@
 import requests
 import json
 import csv
-import plotly.express as px
 import plotly.graph_objects as go
 
 def get_request_url(list):
@@ -84,12 +83,10 @@ def add_AirQ_from_json(list,data, cur, conn):
         id += 1
     conn.commit()
 
-
 def joinDataAVG(cur, conn):
     cur.execute("SELECT city, ROUND(AVG(pm25), 2) FROM Air_quality JOIN Cities ON Air_quality.city_id = Cities.id GROUP BY city_id ORDER BY citygit")
     x = cur.fetchall()
     return(x)
-
 
 def write_csv(data, filename):
     first_row = ["City", "Avg Air Quality"]
@@ -133,22 +130,21 @@ def read_csvTo3list(filename,city_list,date_list,aq_list):
         aq_list.append(float(i[2]))
     return city_list,date_list,aq_list 
 
-
 def graph2(cur,conn):
     #Graph Two (NY-LA)
     v = NYjoinData(cur,conn)
-    write_csv3(v,"NYAirQuailyDaily.csv")
+    write_csv3(v,"NYAirQualityDaily.csv")
     NY_city_list=[]
     NY_date_list=[]
     NY_aq_list=[]
-    read_csvTo3list("NYAirQuailyDaily.csv",NY_city_list,NY_date_list,NY_aq_list)
+    read_csvTo3list("NYAirQualityDaily.csv",NY_city_list,NY_date_list,NY_aq_list)
 
     v = LAjoinData(cur,conn)
-    write_csv3(v,"LAAirQuailyDaily.csv")
+    write_csv3(v,"LAAirQualityDaily.csv")
     LA_city_list=[]
     LA_date_list=[]
     LA_aq_list=[]
-    read_csvTo3list("LAAirQuailyDaily.csv",LA_city_list,LA_date_list,LA_aq_list)
+    read_csvTo3list("LAAirQualityDaily.csv",LA_city_list,LA_date_list,LA_aq_list)
 
     NYdifLA_list=[]
     for i in range(len(NY_city_list)):
