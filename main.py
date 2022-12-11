@@ -28,13 +28,13 @@ if __name__ == '__main__':
     
     data = homeprice.get_detailed_info(cities)
     homeprice.add_prices_from_info(cur, conn, data)
-    avg = homeprice.avgprices(cur, "home_prices", "Home_Price", "Home_Price.city_id")
+    avg = homeprice.avg(cur, "home_prices", "Home_Price", "Home_Price.city_id")
     homeprice.tocsv(avg, 'average_home_price.csv')
     cities_list = []
     avgprice_list = []
     api.read_csvTo2list("average_home_price.csv",cities_list,avgprice_list)
     
-    x = homeprice.avgprices(cur,"pm25","Air_quality", "Air_quality.city_id")
+    x = homeprice.avg(cur,"pm25","Air_quality", "Air_quality.city_id")
     api.write_csv(x,"AirQualityAvg.csv")
     city_list = []
     aq_list = []
